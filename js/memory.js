@@ -1,6 +1,30 @@
-const resources = ['../resources/cb.png', '../resources/co.png',
-                '../resources/sb.png', '../resources/so.png',
-                '../resources/tb.png', '../resources/to.png'];
+const back = `
+<svg width="100" height="120" viewBox="0 0 100 120">
+    <rect width="100" height="120" rx="10" fill="#2c3e50" stroke="white" stroke-width="2"/>
+    <text x="50" y="75" font-family="Arial" font-size="50" fill="white" text-anchor="middle">?</text>
+</svg>`;
+const resources = [
+    //Cercle vermell
+    `<svg width="100" height="120" viewBox="0 0 100 120">
+        <rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/>
+        <circle cx="50" cy="60" r="30" fill="#e74c3c"/>
+    </svg>`,
+    //Quadrat blau
+    `<svg width="100" height="120" viewBox="0 0 100 120">
+        <rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/>
+        <rect x="25" y="35" width="50" height="50" fill="#3498db"/>
+    </svg>`,
+    //Triangle verd
+    `<svg width="100" height="120" viewBox="0 0 100 120">
+        <rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/>
+        <polygon points="50,25 80,85 20,85" fill="#2ecc71"/>
+    </svg>`,
+    //Romba groc
+    `<svg width="100" height="120" viewBox="0 0 100 120">
+        <rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/>
+        <polygon points="50,20 75,60 50,100 25,60" fill="#f1c40f"/>
+    </svg>`
+];
 const back = '../resources/back.png';
 
 const StateCard = Object.freeze({

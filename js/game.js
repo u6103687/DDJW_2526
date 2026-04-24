@@ -6,13 +6,12 @@ var game = $('#game');
 selectCards();
 gameItems.forEach(function (value, idx)
 {
-    game.append(`<img id="${idx}" title="card">`);  // Add element
+    game.append(`<div id="${idx}" class="card" style="display:inline-block; margin:5px; cursor:pointer;"></div>`);  // Add element
     let card = $(`#${idx}`);                       // Obtain element
     card.on('click', function(){
         clickCard(idx);
     });
-    card.attr('src', value);                  // Modify values   
-    initCard(val => card.attr('src', val));        
+    initCard(val => card.html(val));        
 });
 startGame();
 $('#save').on('click', ()=>saveGame());
