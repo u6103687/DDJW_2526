@@ -4,11 +4,12 @@ var options = function(){
     const default_options = {
         pairs: 2,
         difficulty: 'normal'
+	groupSize: 2
     } 
 
     var pairs = $('#pairs');
     var difficulty = $('#dif');
-    
+    var groupSize = $('#groupSize');
     var savedOptions = localStorage.options && JSON.parse(localStorage.options);
     var options = Object.create(default_options);
 
@@ -16,14 +17,17 @@ var options = function(){
         options.pairs = savedOptions.pairs;
     if (savedOptions && savedOptions.difficulty)
         options.difficulty = savedOptions.difficulty;
-
+    if (savedOptions && savedOptions.groupSize)
+	options.groupSize = savedOptions.groupSize;
     pairs.val(options.pairs);
     difficulty.val(options.difficulty);
-
+    groupSize.val(options.groupSize)
     pairs.on('change', function (){
         options.pairs = pairs.val();
     });
-
+    groupSize.on('change', function (){
+	options.groupSize = groupSize.val();
+    });
     difficulty.on('change', function (){
         options.difficulty = difficulty.val();
     });
@@ -35,8 +39,10 @@ var options = function(){
         defaultValues: function(){
             options.pairs = default_options.pairs;
             options.difficulty = default_options.difficulty;
-            pairs.val(options.pairs);
+	    pairs.val(options.pairs);
             difficulty.val(options.difficulty);
+	    options.groupSize = default_options_groupSize;
+	    groupSize.val(options.groupSize);
         }
     }
 }();
