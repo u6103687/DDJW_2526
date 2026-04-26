@@ -59,6 +59,8 @@ var game = {
             this.score = toLoad.score;
             this.pairs = toLoad.pairs;
 	    this.groupSize = toLoad.groupSize || 2;
+	    if (toLoad.mode) sessionStorage.setItem('mode', toLoad.mode);
+	    sessionStorage.removeItem('load');
         }
         else{ // Nova partida
             let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : null;
@@ -135,21 +137,11 @@ var game = {
             selectedCards: this.selectedCards,
             score: this.score,
             pairs: this.pairs,
-	    groupSize: this.groupSize
+	    groupSize: this.groupSize,
+	    mode: sessionStorage.getItem('mode')
         });
-        let ret = false;
-        fetch('../php/save.php', {
-            method: "POST",
-            body: to_save,
-            headers: {"Content-type": "application/json; charset=UTF-8"}
-        })
-        .then(response => ret = JSON.parse(response))
-        .catch (err => console.error(err));
-
-        if (!ret) {
-            console.warn("La partida s'ha guardat en local.");
-            localStorage.save = to_save;
-        }
+        localStorage.setItem('saveGame', to_save);
+        alert("Partida guardada");
         window.location.assign("../");
     }
 }
