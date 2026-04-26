@@ -1,0 +1,34 @@
+#title, .center{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+button.center{
+	width: 8rem;
+	height: 3rem;
+	margin-top: 1rem;
+}
+
+#title{
+	color:blue;
+	text-align: center;
+}
+#game {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+#game img {
+    width: 100px;
+    height: 140px;
+    cursor: pointer;
+    border: 2px solid #33ff33;
+    background-color: #000;
+}
