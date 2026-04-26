@@ -32,7 +32,7 @@ var game = {
     difficulty: 'normal',
     level: 1,
     isProcessing: false,
-    
+    turnsLeft: -1,
     goBack: function(idx){
         this.setValue && this.setValue[idx](back);
         this.states[idx] = StateCard.ENABLE;
@@ -42,7 +42,15 @@ var game = {
         this.setValue && this.setValue[idx](this.items[idx]);
         this.states[idx] = StateCard.DISABLE;
     },
-    
+    saveScore: function() {
+        if (sessionStorage.getItem('mode') !== '2') return;
+        let alias = sessionStorage.getItem('alias') || 'Anònim';
+        let ranking = JSON.parse(localStorage.getItem('ranking') || '[]');
+        ranking.push({ name: alias, score: this.score, level: this.level });
+        ranking.sort((a, b) => b.score - a.score);
+        localStorage.setItem('ranking', JSON.stringify(ranking.slice(0, 10)));
+    },
+
     select: function(){
         if (sessionStorage.load){ // Carreguem partida
             let toLoad = JSON.parse(sessionStorage.load);
@@ -53,6 +61,7 @@ var game = {
             this.pairs = toLoad.pairs;
             this.groupSize = toLoad.groupSize || 2;
             this.level = toLoad.level || 1;
+	    this.turnsLeft = toLoad.turnsLeft || -1;
             if (toLoad.mode) sessionStorage.setItem('mode', toLoad.mode);
             sessionStorage.removeItem('load');
             if (toLoad.difficulty) this.difficulty = toLoad.difficulty;
@@ -64,9 +73,13 @@ var game = {
             this.score = nextLvlData.score;
             this.difficulty = nextLvlData.difficulty;
             this.level = nextLvlData.level;
-            
-            sessionStorage.removeItem('mode2_next_level'); 
-            
+            let baseTime = this.difficulty === 'hard' ? 500 : (this.difficulty === 'easy' ? 1500 : 1000);
+            if (baseTime - (this.level - 1) * 100 <= 200) {
+                this.turnsLeft = Math.ceil(this.pairs * 1.5);
+            } else {
+                this.turnsLeft = -1;
+            }
+            sessionStorage.removeItem('mode2_next_level');
             this.items = resources.slice();
             shuffe(this.items);
             let baseItems = this.items.slice(0, this.pairs);
@@ -80,6 +93,7 @@ var game = {
         }
         else{
             this.level = 1;
+	    this.turnsLeft = -1;
             let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : null;
             if (savedOptions) {
                 if (savedOptions.groupSize) this.groupSize = parseInt(savedOptions.groupSize);
@@ -98,7 +112,6 @@ var game = {
             this.states = new Array(this.items.length);
         }
     },
-    
     start: function(){
         this.items.forEach((_, indx) => {
             if (this.states[indx] === StateCard.DONE || this.states[indx] === StateCard.DISABLE) {
@@ -118,6 +131,7 @@ var game = {
         this.goFront(indx);
         this.selectedCards.push(indx);
         if (this.selectedCards.length === this.groupSize) {
+	    if (this.turnsLeft > 0) this.turnsLeft--;
             let allMatch = true;
             let firstCardValue = this.items[this.selectedCards[0]];
             for (let i = 1; i<this.selectedCards.length; i++){
@@ -128,6 +142,7 @@ var game = {
             }
             if (allMatch) {
                 this.pairs--;
+		if (sessionStorage.getItem('mode') === '2') this.score += (10 * this.level);
                 this.selectedCards.forEach(idx => this.states[idx] = StateCard.DONE);
                 if (this.pairs <= 0){
                     setTimeout(() => {
@@ -137,49 +152,41 @@ var game = {
                            window.location.assign("../");
                        }
                        else if (currentMode === '2') {
-                           alert(`Nivell ${this.level} completat! Preparant el següent...`);
+			   this.score += (100 * this.level);
+                           alert(`Nivell ${this.level} completat! +${100* this.level} punts`);
                            this.level++;
-                           if (this.pairs < 8) {
-                               this.pairs = (this.items.length / this.groupSize) + 1;
-                               if (this.pairs > 8) this.pairs = 8;
-                           } else {
-                               this.pairs = 8;
-                           }
-                           if (this.level % 2 === 0) {
+                           this.pairs = Math.min(8, (this.items.length / this.groupSize) + 1);
+			   if (this.level % 2 === 0) {
                                this.groupSize++;
                            }
-                           let nextLevelState = {
+                           sessionStorage.setItem('mode2_next_level', JSON.stringify({
                                level: this.level,
                                pairs: this.pairs,
                                groupSize: this.groupSize,
                                score: this.score,
                                difficulty: this.difficulty
-                           };
-                           sessionStorage.setItem('mode2_next_level', JSON.stringify(nextLevelState));
+                           }));
                            window.location.reload();
                        }
                     }, 500);
                 }
             } 
             else {
-                let baseTime = 1000;
-                if (this.difficulty === 'easy') baseTime = 1500;
-                else if (this.difficulty === 'hard') baseTime = 500;
-                let timeReduction = (this.level - 1) * 100;
-                let hideTime = baseTime - timeReduction;
-                if (hideTime < 200) hideTime = 200; 
+		let baseTime = this.difficulty === 'easy' ? 1500 : (this.difficulty === 'hard' ? 500 : 1000);
+                let hideTime = Math.max(200, baseTime - (this.level - 1) * 100);
                 this.isProcessing = true;
-                let cardsToHide = [...this.selectedCards];               
+                let cardsToHide = [...this.selectedCards];
                 setTimeout(() => {
                     cardsToHide.forEach(idx => this.goBack(idx));
                     this.isProcessing = false;
-                }, hideTime);               
-                let basePenalty = 25;
-                let penalty = basePenalty + ((this.level - 1) * 5);
+                }, hideTime);
+                let basePenalty = 25 + ((this.level -1) *10);
                 this.score -= penalty;
-                if (this.score <= 0){
+                if (this.score <= 0 || (this.turnsLeft === 0 && this.pairs > 0)){
+		    this.saveScore();
                     setTimeout(() => {
-                        alert (`Has perdut al Nivell ${this.level}. Més sort la propera vegada!`);
+			let motiu = this.score <= 0 ? "Sense punts" : "Sense intents";
+                        alert (`Has perdut per (${motiu}) al Nivell ${this.level}. Punts: ${this.score}`);
                         window.location.assign("../");
                     }, hideTime);
                 }
@@ -188,7 +195,7 @@ var game = {
         }
     },
     save: function(){
-        let to_save = JSON.stringify({
+        localStorage.setItem('save_game', JSON.stringify({
             items: this.items,
             states: this.states,
             selectedCards: this.selectedCards,
@@ -197,6 +204,7 @@ var game = {
             groupSize: this.groupSize,
             difficulty: this.difficulty,
             level: this.level,
+	    turnsLeft: this.turnsLeft,
             mode: sessionStorage.getItem('mode')
         });
         localStorage.setItem('save_game', to_save);

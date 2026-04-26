@@ -1,6 +1,8 @@
 addEventListener('load', function() {
     document.getElementById('playMode1').addEventListener('click', 
     function(){
+	let alias = prompt("Introdueix el teu nom/àlies:") || "anònim";
+        sessionStorage.setItem('alias', alias);
         sessionStorage.removeItem('load');
 	sessionStorage.setItem('mode', '1');
         window.location.assign("./html/game.html");
@@ -27,4 +29,8 @@ addEventListener('load', function() {
         sessionStorage.setItem ('load', savedData);
         window.location.assign("./html/game.html");
     });
+    document.getElementById('scoresBtn').addEventListener('click', function(){
+        window.location.assign("./html/scores.html");
+    });
 });
+
