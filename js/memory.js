@@ -1,24 +1,16 @@
-const back = `
-<svg width="100" height="120" viewBox="0 0 100 120">
+const back = `<svg width="100" height="120" viewBox="0 0 100 120">
     <rect width="100" height="120" rx="10" fill="#2c3e50" stroke="white" stroke-width="2"/>
     <text x="50" y="75" font-family="Arial" font-size="50" fill="white" text-anchor="middle">?</text>
 </svg>`;
+
 const resources = [
-    // 1. Cercle vermell
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><circle cx="50" cy="60" r="30" fill="#e74c3c"/></svg>`,
-    // 2. Quadrat blau
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><rect x="25" y="35" width="50" height="50" fill="#3498db"/></svg>`,
-    // 3. Triangle verd
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><polygon points="50,25 80,85 20,85" fill="#2ecc71"/></svg>`,
-    // 4. Rombe groc
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><polygon points="50,20 75,60 50,100 25,60" fill="#f1c40f"/></svg>`,
-    // 5. Hexàgon lila
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><polygon points="30,30 70,30 90,60 70,90 30,90 10,60" fill="#9b59b6"/></svg>`,
-    // 6. El·lipse taronja
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><ellipse cx="50" cy="60" rx="40" ry="20" fill="#e67e22"/></svg>`,
-    // 7. Creu cian
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><polygon points="40,20 60,20 60,45 85,45 85,65 60,65 60,90 40,90 40,65 15,65 15,45 40,45" fill="#00bcd4"/></svg>`,
-    // 8. Estrella rosa
     `<svg width="100" height="120" viewBox="0 0 100 120"><rect width="100" height="120" rx="10" fill="white" stroke="#ccc" stroke-width="2"/><polygon points="50,15 61,38 85,41 68,58 72,82 50,70 28,82 32,58 15,41 39,38" fill="#e84393"/></svg>`
 ];
 
@@ -38,15 +30,19 @@ var game = {
     pairs: 2,
     groupSize: 2,
     difficulty: 'normal',
+    level: 1,
     isProcessing: false,
+    
     goBack: function(idx){
         this.setValue && this.setValue[idx](back);
         this.states[idx] = StateCard.ENABLE;
     },
+    
     goFront: function(idx){
         this.setValue && this.setValue[idx](this.items[idx]);
         this.states[idx] = StateCard.DISABLE;
     },
+    
     select: function(){
         if (sessionStorage.load){ // Carreguem partida
             let toLoad = JSON.parse(sessionStorage.load);
@@ -55,30 +51,54 @@ var game = {
             this.selectedCards = toLoad.selectedCards || [];
             this.score = toLoad.score;
             this.pairs = toLoad.pairs;
-	    this.groupSize = toLoad.groupSize || 2;
-	    if (toLoad.mode) sessionStorage.setItem('mode', toLoad.mode);
-	    sessionStorage.removeItem('load');
-        if (toLoad.difficulty) this.difficulty = toLoad.difficulty;
+            this.groupSize = toLoad.groupSize || 2;
+            this.level = toLoad.level || 1;
+            if (toLoad.mode) sessionStorage.setItem('mode', toLoad.mode);
+            sessionStorage.removeItem('load');
+            if (toLoad.difficulty) this.difficulty = toLoad.difficulty;
         }
-        else{ // Nova partida
-        let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : null;
-        if (savedOptions) {
-            if (savedOptions.groupSize) this.groupSize = parseInt(savedOptions.groupSize);
-            if (savedOptions.difficulty) this.difficulty = savedOptions.difficulty;
-            if (savedOptions.pairs) this.pairs = parseInt(savedOptions.pairs);
-        }
-	    this.items = resources.slice();
+        else if (sessionStorage.mode2_next_level) {
+            let nextLvlData = JSON.parse(sessionStorage.mode2_next_level);
+            this.pairs = nextLvlData.pairs;
+            this.groupSize = nextLvlData.groupSize;
+            this.score = nextLvlData.score;
+            this.difficulty = nextLvlData.difficulty;
+            this.level = nextLvlData.level;
+            
+            sessionStorage.removeItem('mode2_next_level'); 
+            
+            this.items = resources.slice();
             shuffe(this.items);
-	    let baseItems = this.items.slice(0, this.pairs);
-	    let totalItems = [];
-	    for (let i = 0; i < this.groupSize; i++) {
-		totalItems = totalItems.concat(baseItems);
-	    }
-	    this.items = totalItems;
+            let baseItems = this.items.slice(0, this.pairs);
+            let totalItems = [];
+            for (let i = 0; i < this.groupSize; i++) {
+                totalItems = totalItems.concat(baseItems);
+            }
+            this.items = totalItems;
+            shuffe(this.items);
+            this.states = new Array(this.items.length);
+        }
+        else{
+            this.level = 1;
+            let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : null;
+            if (savedOptions) {
+                if (savedOptions.groupSize) this.groupSize = parseInt(savedOptions.groupSize);
+                if (savedOptions.difficulty) this.difficulty = savedOptions.difficulty;
+                if (savedOptions.pairs) this.pairs = parseInt(savedOptions.pairs);
+            }
+            this.items = resources.slice();
+            shuffe(this.items);
+            let baseItems = this.items.slice(0, this.pairs);
+            let totalItems = [];
+            for (let i = 0; i < this.groupSize; i++) {
+                totalItems = totalItems.concat(baseItems);
+            }
+            this.items = totalItems;
             shuffe(this.items);
             this.states = new Array(this.items.length);
         }
     },
+    
     start: function(){
         this.items.forEach((_, indx) => {
             if (this.states[indx] === StateCard.DONE || this.states[indx] === StateCard.DISABLE) {
@@ -97,7 +117,6 @@ var game = {
         if (this.isProcessing || this.states[indx] !== StateCard.ENABLE || this.ready < this.items.length) return;
         this.goFront(indx);
         this.selectedCards.push(indx);
-        
         if (this.selectedCards.length === this.groupSize) {
             let allMatch = true;
             let firstCardValue = this.items[this.selectedCards[0]];
@@ -107,7 +126,6 @@ var game = {
                    break;
                 }
             }
-            
             if (allMatch) {
                 this.pairs--;
                 this.selectedCards.forEach(idx => this.states[idx] = StateCard.DONE);
@@ -115,31 +133,53 @@ var game = {
                     setTimeout(() => {
                        let currentMode = sessionStorage.getItem('mode') || '1';
                        if (currentMode === '1') {
-                        alert(`Has guanyat amb ${this.score} punts`);
-                        window.location.assign("../");
+                           alert(`Has guanyat amb ${this.score} punts`);
+                           window.location.assign("../");
                        }
                        else if (currentMode === '2') {
-                        alert(`Nivell completat, passant al següent nivell`);
+                           alert(`Nivell ${this.level} completat! Preparant el següent...`);
+                           this.level++;
+                           if (this.pairs < 8) {
+                               this.pairs = (this.items.length / this.groupSize) + 1;
+                               if (this.pairs > 8) this.pairs = 8;
+                           } else {
+                               this.pairs = 8;
+                           }
+                           if (this.level % 2 === 0) {
+                               this.groupSize++;
+                           }
+                           let nextLevelState = {
+                               level: this.level,
+                               pairs: this.pairs,
+                               groupSize: this.groupSize,
+                               score: this.score,
+                               difficulty: this.difficulty
+                           };
+                           sessionStorage.setItem('mode2_next_level', JSON.stringify(nextLevelState));
+                           window.location.reload();
                        }
                     }, 500);
                 }
-            }
+            } 
             else {
-                let hideTime = 1000;
-                if (this.difficulty === 'easy') hideTime = 1500;
-                else if (this.difficulty === 'hard') hideTime = 500;
-                
+                let baseTime = 1000;
+                if (this.difficulty === 'easy') baseTime = 1500;
+                else if (this.difficulty === 'hard') baseTime = 500;
+                let timeReduction = (this.level - 1) * 100;
+                let hideTime = baseTime - timeReduction;
+                if (hideTime < 200) hideTime = 200; 
                 this.isProcessing = true;
                 let cardsToHide = [...this.selectedCards];               
                 setTimeout(() => {
                     cardsToHide.forEach(idx => this.goBack(idx));
                     this.isProcessing = false;
                 }, hideTime);               
-                
-                this.score -= 25;
+                let basePenalty = 25;
+                let penalty = basePenalty + ((this.level - 1) * 5);
+                this.score -= penalty;
                 if (this.score <= 0){
                     setTimeout(() => {
-                        alert ("Has perdut");
+                        alert (`Has perdut al Nivell ${this.level}. Més sort la propera vegada!`);
                         window.location.assign("../");
                     }, hideTime);
                 }
@@ -147,7 +187,6 @@ var game = {
             this.selectedCards = []; 
         }
     },
-
     save: function(){
         let to_save = JSON.stringify({
             items: this.items,
@@ -155,9 +194,10 @@ var game = {
             selectedCards: this.selectedCards,
             score: this.score,
             pairs: this.pairs,
-	        groupSize: this.groupSize,
+            groupSize: this.groupSize,
             difficulty: this.difficulty,
-	    mode: sessionStorage.getItem('mode')
+            level: this.level,
+            mode: sessionStorage.getItem('mode')
         });
         localStorage.setItem('save_game', to_save);
         alert("Partida guardada");
