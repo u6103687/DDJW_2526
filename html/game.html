@@ -1,13 +1,19 @@
-<!DOCTYPE html> 
-<html>
-	<head>
-        <script src="../js/game.js" type="module"></script>
-		<title> Memory - Pantalla </title>
-	</head>
-	<body>
-		<h1>Partida</h1>
-        <div id="game"> </div>
-		<button id="save">Guardar</button>
-	</body>
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory - Joc</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="../js/game.js" type="module"></script>
+</head>
+<body>
+    <div id="game_window">
+        <div id="game"></div>
+        <div class="controls">
+            <button id="save">Guardar Partida</button>
+            <button id="endGameBtn">Acabar Partida</button>
+        </div>
+    </div>
+</body>
 </html>
-

@@ -1,14 +1,15 @@
 <!DOCTYPE html> 
-<html lang="ca">
-<head>
-    <meta charset="UTF-8">
-    <title> Memory - Menú </title>
-    <link rel="stylesheet" href="./styles/main.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="./js/main.js" defer></script>
-</head>
-<body>
-    <div class="menu">
+<html>
+    <head>
+        <script type="module">
+            import { $ } from './library/jquery-4.0.0.slim.module.min.js';
+            window.$ = window.jQuery = $;
+        </script>
+        <script src="./js/main.js" defer></script>
+        <link rel="stylesheet" href="./styles/main.css">
+        <title> Memory - Menú </title>
+    </head>
+    <body>
         <h1 id="title">Menú</h1>
         <button id="playMode1" class="center"> Clàssic </button>
         <button id="playMode2" class="center"> Infinit </button>
@@ -16,6 +17,5 @@
         <button id="options" class="center"> Opcions </button>
         <button id="saves" class="center"> Partides </button>
         <button id="exit" class="center"> Sortir </button>
-    </div>
-</body>
+    </body>
 </html>

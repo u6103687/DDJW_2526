@@ -9,7 +9,7 @@ $(document).ready(function() {
         html += '</ol>';
         $('#rankingList').html(html);
     } else {
-        $('#rankingList').html('<p style="text-align:center;">Encara no hi ha puntuacions. Sigues el primer!</p>');
+        $('#rankingList').html('<p style="text-align:center;">No hi ha puntuacions encara.</p>');
     }
     $('#return').on('click', function() {
         window.location.assign("../");

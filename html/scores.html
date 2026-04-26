@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <title>Ranking Puntuacions</title>
     <link rel="stylesheet" href="../styles/main.css">
-    <script src="../library/jquery-4.0.0.slim.module.min.js"></script>
+    <script type="module">
+        import { $ } from '../library/jquery-4.0.0.slim.module.min.js';
+        window.$ = window.jQuery = $;
+    </script>
     <script src="../js/scores.js" type="module"></script>
 </head>
 <body>
