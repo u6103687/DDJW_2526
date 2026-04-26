@@ -6,12 +6,12 @@ addEventListener('load', function() {
         window.location.assign("./html/game.html");
     });
 
-    document.getElementbyId('playMode2').addEventListener('click', 
+    document.getElementById('playMode2').addEventListener('click', 
     function(){
 	sessionStorage.removeItem('load');
 	sessionStorage.setItem('mode', '2');
 	window.location.assign("./html/game.html")
-
+    });
     document.getElementById('options').addEventListener('click', 
     function(){
         window.location.assign("./html/options.html");

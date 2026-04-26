@@ -3,7 +3,7 @@ import {$} from "../library/jquery-4.0.0.slim.module.min.js";
 var options = function(){
     const default_options = {
         pairs: 2,
-        difficulty: 'normal'
+        difficulty: 'normal',
 	groupSize: 2
     } 
 
@@ -54,4 +54,7 @@ $('#default').on('click', function(){
 $('#apply').on('click', function(){
     options.applyChanges();
     location.assign("../");
+});
+$('#return').on('click', function(){
+    window.location.assign("../");
 });
