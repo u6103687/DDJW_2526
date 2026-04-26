@@ -1,9 +1,16 @@
 addEventListener('load', function() {
-    document.getElementById('play').addEventListener('click', 
+    document.getElementById('playMode1').addEventListener('click', 
     function(){
         sessionStorage.removeItem('load');
+	sessionStorage.setItem('mode', '1');
         window.location.assign("./html/game.html");
     });
+
+    document.getElementbyId('playMode2').addEventListener('click', 
+    function(){
+	sessionStorage.removeItem('load');
+	sessionStorage.setItem('mode', '2');
+	window.location.assign("./html/game.html")
 
     document.getElementById('options').addEventListener('click', 
     function(){

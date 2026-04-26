@@ -108,8 +108,14 @@ var game = {
 			this.pairs--;
 			this.selectedCards.forEach(idx => this.states[idx] = StateCard.DONE);
 			if (this.pairs <= 0){
-			   alert(`Has guanyat amb ${this.score} punts`);
-			   window.location.assign("../");
+			   let currentMode = sessionStorage.getItem('mode') || '1';
+			   if (currentMode === '1') {
+				alert(`Has guanyat amb ${this.score} punts`);
+				window.location.assign("../");
+			   }
+			   else if (currentMode === '2') {
+				alert(`Nivell completat, passant al següent nivell`);
+			   }
 			}
 		}
 		else {
